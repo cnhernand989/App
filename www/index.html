@@ -1,0 +1,80 @@
+<!doctype html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Place favicon.ico and apple-touch-icon(s) in the root directory -->
+        <!--<link rel="stylesheet" href="css/normalize.css">		<link rel="stylesheet" href="css/main.css">-->		<link rel="stylesheet" type="text/css" href="css/bootstrap.css">		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">		<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">		<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">		<script src="js/vendor/modernizr-2.7.1.min.js"></script>		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.simpleWeather/2.5.0/jquery.simpleWeather.min.js"></script>		<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>		 <script type="text/javascript">   var geocoder;  if (navigator.geolocation) {    navigator.geolocation.getCurrentPosition(successFunction, errorFunction);} //Get the latitude and the longitude;function successFunction(position) {    var lat = position.coords.latitude;    var lng = position.coords.longitude;    codeLatLng(lat, lng)}function errorFunction(){    alert("Geocoder failed");}  function initialize() {    geocoder = new google.maps.Geocoder();  }  function codeLatLng(lat, lng) {    var latlng = new google.maps.LatLng(lat, lng);    geocoder.geocode({'latLng': latlng}, function(results, status) {      if (status == google.maps.GeocoderStatus.OK) {      console.log(results)        if (results[1]) {         //formatted address         //alert(results[0].formatted_address)		 document.getElementById('cloc').value = results[0].formatted_address;        //find country name             for (var i=0; i<results[0].address_components.length; i++) {            for (var b=0;b<results[0].address_components[i].types.length;b++) {            //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate                if (results[0].address_components[i].types[b] == "administrative_area_level_1") {                    //this is the object you are looking for                    city= results[0].address_components[i];                    break;                }            }        }        //city data        //alert(city.long_name)        } else {          alert("No results found");        }      } else {        alert("Geocoder failed due to: " + status);      }    });  }  function validateForm(){	var location = document.getElementById('dloc').value;	var validFormat = /([^,]+),(?=\s*(\w{2}))/; 	if (location.match(validFormat))	 {		forecast(document.getElementById('dloc').value)	 }	else	{		alert("Not Valid Format for Location");		return false;	}}  </script> 				
+    </head>
+    <body onload="initialize()">	<div class="container" style="width:350px">
+		<h2 class="text-center"><font color="white">Current Location</font></h2>		<input type="text" class="form-control input-lg" id="cloc"  name="cLocation" placeholder="City, Region, Country" readonly/>		<button type="button" class="btn btn-primary btn-lg btn-block" onclick="forecast(document.getElementById('cloc').value)">Show</button>		<br><h2 class="text-center"><font color="white">Different Location</font></h2>		<input type="text" class="form-control input-lg" id="dloc"  name="dLocation" placeholder="City, Region, Country"/>		<button type="button" class="btn btn-primary btn-lg btn-block" onclick="validateForm()">Show</button></br>
+		<!--<div id="weather"></div>-->		<br><div class="panel panel-primary">			  <div class="panel-heading">				   <h3 class="panel-title">Your Weather Information</h3>			  </div>			  <div id="weather" class="panel-body">			</div>		</div></br>	</div>
+
+<script>
+function forecast(local)
+{
+$(document).ready(function() {
+$.simpleWeather({
+location: local,
+woeid: '',
+unit: 'f',
+success: function(weather) {
+if(weather.region != '')
+{
+	html = '<h2><center><i class="icon-'+weather.code+'"></i>'+weather.city+', '+weather.region+', '+weather.country+'</center></h2>';
+}
+else
+{
+	html = '<h2><center><i class="icon-'+weather.code+'"></i>'+weather.city+', '+weather.country+'</center></h2>';
+}
+html += '<ul><li>Current Temperature '+weather.temp+'&deg;'+weather.units.temp+'|'+weather.tempAlt+'&deg;'+weather.units.tempAlt+'</li>';
+
+html += '<li> High '+weather.high+'&deg;'+weather.units.temp+'|'+weather.highAlt+'&deg;'+weather.units.tempAlt+' ~ Low '+weather.low+'&deg;'+weather.units.temp+'|'+weather.lowAlt+'&deg;'+weather.units.tempAlt+'</li>';
+
+html += '<li class="currently">'+weather.currently+'</li>';
+
+html += '<li>'+weather.wind.direction+' '+weather.wind.speed+' '+weather.units.speed+'</li>';
+
+html += '<li> Wind Chill '+weather.wind.chill+'&deg;'+weather.units.temp+'</li>';
+
+html += '<li> Humidity '+weather.humidity+'</li>';
+
+html += '<li> Sunrise '+weather.sunrise+', Sunset '+weather.sunset+'</li></ul>';
+
+html += '<p><center><img src="'+weather.image+'"></center></p>';
+
+html += '<p> Last Updated: '+weather.updated+'</p>'
+
+html += '<p><a href="'+weather.link+'">View Extended Forecast At Yahoo! Weather</a></p>';
+
+$("#weather").html(html);
+},
+
+error: function(error) {
+$("#weather").html('<p>'+error+'</p>');
+}
+
+});
+});
+}
+</script>
+
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> -->
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script>
+    </body>
+</html>
